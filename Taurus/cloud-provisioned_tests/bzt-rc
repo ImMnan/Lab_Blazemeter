@@ -1,0 +1,14 @@
+##This is a .bzt-rc file places in /home/user/.bzt-rc, defaul configuration for any tests run by this user. 
+
+modules:
+  cloud:
+    token: '******:**************'  # API id and API secret divided by :
+    timeout: 10s  # BlazeMeter API client timeout
+    browser-open: start  # auto-open browser on test start/end/both/none
+    check-interval: 5s  # interval which Taurus uses to query test status from BlazeMeter
+    public-report: false  # make test report public, disabled by default
+    send-report-email: false  # send report email once test is finished, disabled by default
+    request-logging-limit: 10240 # use this to dump more of request/response data into logs, for debugging
+
+## We can also declare the project, workspace or test here. 
+    
