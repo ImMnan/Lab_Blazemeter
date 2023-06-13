@@ -3,6 +3,7 @@ execution:
   concurrency: 10
   hold-for: 2m
   ramp-up: 1m
+  steps: 2 # Ramp-up steps
   scenario: basic
 - executor: jmeter    #second executor for more than one scenario, executor is not mandatory
   scenario: basic_two
