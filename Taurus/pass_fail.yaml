@@ -1,0 +1,18 @@
+execution:
+- executor: jmeter
+  concurrency: 10
+  hold-for: 2m
+  ramp-up: 1m
+  steps: 2 # Ramp-up steps
+  scenario: basic
+
+senarios:
+  basic:
+    requests:
+    - https://www.demoblaze.com
+
+reporting:
+- module: passfail
+  criteria: # subject of [label] condition threshold [logic] [timeframe], action as status
+  - avg_response avg-rt>2s , continue as failed
+ # - fail of CheckoutPage>50% for 10s, stop as failed
