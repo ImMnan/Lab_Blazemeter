@@ -18,4 +18,6 @@ scenarios:
 reporting:
 - module: passfail
   criteria: # subject of [label] condition threshold [logic] [timeframe], action as status
-  - avg-rt>150ms, continue as failed
+  - average response too high:  avg-rt>150ms, continue as failed
+
+  
