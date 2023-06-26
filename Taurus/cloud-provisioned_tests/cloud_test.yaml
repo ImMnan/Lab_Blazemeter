@@ -1,18 +1,18 @@
-# Run the test with -o provisioning=cloud option with the bzt command.
+# Run the test with -cloud option with the bzt command.
 
 execution:
 - scenario: my-scenario
-#- locations:   
+#- locations:    #bzt -locations
 #    us-west-1: 1
 #    us-east-1: 2
-
+#  locations-weighted: false # represent the number of engines per location set above
 scenarios:
   my-scenario:
     requests:
     - http://blazedemo.com/
     
 modules:
-#  blazemeter:  
+#  blazemeter:   # if only data/reports needs to be sent to blazemeter
 #    dedicated-ips: true
   cloud:
     account: My Account  # numeric identifier can also be specified
