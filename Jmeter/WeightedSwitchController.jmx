@@ -104,7 +104,7 @@ without actual network activity. This helps debugging tests.</stringProp>
               <stringProp name="REQUEST_DATA">Dummy Sampler used to simulate requests and responses
 without actual network activity. This helps debugging tests.</stringProp>
               <stringProp name="RESPONSE_DATA">Dummy Sampler used to simulate requests and responses
-without actual network activity. This helps debugging tests.</stringProp>
+without actual network activity. This helps debugging.</stringProp>
               <stringProp name="RESPONSE_TIME">${__Random(50,500)}</stringProp>
               <stringProp name="LATENCY">${__Random(1,50)}</stringProp>
               <stringProp name="CONNECT">${__Random(1,5)}</stringProp>
