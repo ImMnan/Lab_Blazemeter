@@ -9,7 +9,7 @@ execution:
   scenario: basic_two
 
 senarios:
-  basic_two:
+  basic:
     requests:
     - https://www.demoblaze.com
 
