@@ -8,7 +8,7 @@ execution:
 - executor: jmeter    #second executor for more than one scenario, executor is not mandatory
   scenario: basic_two
 
-senarios:
+scenarios:
   basic:
     requests:
     - https://www.demoblaze.com
