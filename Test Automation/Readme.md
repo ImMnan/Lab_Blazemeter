@@ -1,0 +1,1 @@
+Complete automation testing - Shift left
