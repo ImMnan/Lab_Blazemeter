@@ -1,0 +1,100 @@
+# This is for defining Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rolecrane
+rules:
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions", "apps", ""] # leave empty string for core
+  resources: ["pods", "services", "endpoints", "daemonsets", "pods/*", "pods/exec", "deployments", "replicasets", "ingresses", "deployments/scale"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "createcollection"]
+
+---
+# This is for binding the above defined role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rolecrane-binding-default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: dmz
+roleRef:
+  kind: Role 
+  name: rolecrane
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# This is for cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clustercranerole
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+
+---
+# This is for binding above cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: clustercranerole-binding-default
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: clustercranerole
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: dmz
+
+---
+# This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: rolecrane
+  name: crane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: rolecrane
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        role: rolecrane
+    spec:
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      containers:
+      - env:
+        - name: AUTH_TOKEN
+          value: <auth_token> # Update auth token
+        - name: HARBOR_ID
+          value: <harbor_id> # Update Harbour ID
+        - name: SHIP_ID
+          value: <ship_id> # Update ship ID
+        - name: CONTAINER_MANAGER_TYPE
+          value: KUBERNETES
+        - name: IMAGE_OVERRIDES
+          value: '{}'
+        - name: DOCKER_REGISTRY
+          value: gcr.io/verdant-bulwark-278
+        - name: AUTO_KUBERNETES_UPDATE
+          value: 'true'
+        image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
+        imagePullPolicy: Always
+        name: crane-container
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
