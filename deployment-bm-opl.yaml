@@ -63,6 +63,7 @@ metadata:
   labels:
     role: rolecrane
   name: crane
+  namespace: dmz
 spec:
   replicas: 1
   selector:
