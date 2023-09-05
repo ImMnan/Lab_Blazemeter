@@ -1,0 +1,113 @@
+# This is for defining Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rolecrane
+rules:
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions", "apps", ""] # leave empty string for core
+  resources: ["pods", "services", "endpoints", "daemonsets", "pods/*", "pods/exec", "deployments", "replicasets", "ingresses", "deployments/scale", "Jobs" ]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "createcollection"]
+
+---
+# This is for binding the above defined role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rolecrane-binding-default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: nonroot
+roleRef:
+  kind: Role 
+  name: rolecrane
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# This is for cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clustercranerole
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+
+---
+# This is for binding above cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: clustercranerole-binding-default
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: clustercranerole
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: nonroot
+
+---
+# This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: rolecrane
+  name: crane-blazemeter
+  namespace: nonroot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: rolecrane
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        role: rolecrane
+    spec:
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      containers:
+      - env:
+        - name: AUTH_TOKEN
+          value: f6c880e69f81fd9ee34a77571530cf7812094a7025fb0464a2bf2f75ac5190c4 # Update auth token
+        - name: HARBOR_ID
+          value: 63cd1cc281374f2d9743cc73 # Update Harbour ID
+        - name: SHIP_ID
+          value: 64ef4d7ba46e90390705f9e6 # Update ship ID
+        - name: CONTAINER_MANAGER_TYPE
+          value: KUBERNETES
+        - name: IMAGE_OVERRIDES
+          value: '{}'
+        - name: DOCKER_REGISTRY
+          value: gcr.io/verdant-bulwark-278
+        - name: AUTO_KUBERNETES_UPDATE
+          value: 'true'
+        - name: INHERIT_RUNNING_USER_AND_GROUP
+          value: 'true'
+        image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
+        imagePullPolicy: Always
+        name: crane-container
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsGroup: 1337
+          runAsUser: 1337
+
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+
