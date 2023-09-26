@@ -1,0 +1,22 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:  
+  name: contour-access-cluster-role 
+rules:
+- apiGroups: ['']
+  resources: [nodes]
+  verbs: [get, list, watch, create, update, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: 
+  name: contour-access-for-default-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: contour-access-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: bm1

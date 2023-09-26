@@ -1,0 +1,117 @@
+---
+# Source: blazemeter-crane/templates/rbac-cluster.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-role-crane2
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "update", "watch", "patch"]
+---
+# Source: blazemeter-crane/templates/rbac-cluster.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-role-crane2-binding-default
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-role-crane2
+subjects:
+- kind: ServiceAccount
+  name: default
+
+  namespace: bm2
+---
+# Source: blazemeter-crane/templates/rbac-ns.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: role-crane2
+  namespace: bm2
+rules:
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions", "apps", ""] # leave empty string for core
+  resources: ["pods", "services", "endpoints", "daemonsets", "pods/*", "pods/exec", "deployments", "replicasets", "ingresses", "deployments/scale"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "createcollection"]
+---
+# Source: blazemeter-crane/templates/rbac-ns.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: role-crane2-binding-bm2-default
+  namespace: bm2
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: bm2
+roleRef:
+  kind: Role 
+  name: role-crane2
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: blazemeter-crane/templates/crane.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: role-crane2
+  name: crane
+  namespace: bm2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: role-crane2
+      crane: ready
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        role: role-crane2
+        crane: ready
+    spec:
+      serviceAccountName: default
+
+      automountServiceAccountToken: true
+      containers:
+      - env:
+        - name: AUTH_TOKEN
+          value: 628dbec71988169a16ba9aad12887cd2d9a6caeda31e34d09179bed3bd16e9ea
+        - name: HARBOR_ID
+          value: 650e7217a737f4164d0e20a6
+        - name: SHIP_ID
+          value: 651166b6e14bba8e570da596
+        - name: CONTAINER_MANAGER_TYPE
+          value: KUBERNETES
+        - name: IMAGE_OVERRIDES
+          value: '{}'
+        - name: DOCKER_REGISTRY
+          value: gcr.io/verdant-bulwark-278
+        - name: AUTO_KUBERNETES_UPDATE
+          value: 'true'
+        image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
+        imagePullPolicy: Always
+        name: crane-container
+        
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: { name: contour-access-cluster-role }
+rules: [{ apiGroups: [''], resources: [nodes], verbs: [get, list, watch, create, update, patch] }]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: { name: contour-access-for-default-sa }
+roleRef: { apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: contour-access-cluster-role }
+subjects: [{ kind: ServiceAccount, name: default, namespace: bm2 }]
