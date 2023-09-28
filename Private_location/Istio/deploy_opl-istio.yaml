@@ -1,0 +1,150 @@
+# This is for defining Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: role-crane1
+rules:
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions", "apps", ""] # leave empty string for core
+  resources: ["pods", "services", "endpoints", "daemonsets", "pods/*", "pods/exec", "deployments", "replicasets", "ingresses", "deployments/scale", "virtualservices"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "createcollection"]
+
+---
+# This is for binding the above defined role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: role-crane1-binding-default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: bm1
+roleRef:
+  kind: Role 
+  name: role-crane1
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# This is for cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clustercranerole1
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+
+---
+# This is for binding above cluster role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: clustercranerole1-binding-default
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: clustercranerole1
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: bm1
+
+---
+# This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: role-crane1
+  name: crane-istio
+  namespace: bm1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: role-crane1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        role: role-crane1
+    spec:
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      containers:
+      - env:
+        - name: AUTH_TOKEN
+          value: e306dfdddccc619f42d44adec643987927945f11de0e25e814ba771825e39e32 # Update auth token
+        - name: HARBOR_ID
+          value: 650e7217a737f4164d0e20a6 # Update Harbour ID
+        - name: SHIP_ID
+          value: 65115d273265911ef80393d6 # Update ship ID
+        - name: CONTAINER_MANAGER_TYPE
+          value: KUBERNETES
+        - name: IMAGE_OVERRIDES
+          value: '{}'
+        - name: DOCKER_REGISTRY
+          value: gcr.io/verdant-bulwark-278
+        - name: AUTO_KUBERNETES_UPDATE
+          value: 'true'
+        - name: KUBERNETES_WEB_EXPOSE_TYPE
+          value: ISTIO
+        - name: KUBERNETES_WEB_EXPOSE_SUB_DOMAIN
+          value: bmgo.local
+        - name: KUBERNETES_WEB_EXPOSE_TLS_SECRET_NAME
+          value: wildcard-credential
+        - name: KUBERNETES_SERVICE_USE_TYPE
+          value: CLUSTERIP
+        - name: KUBERNETES_USE_PRE_PULLING
+          value: "true"
+        - name: KUBERNETES_ISTIO_GATEWAY_NAME
+          value: bzm-gateway
+       ## Note: The environment variable KUBERNETES_ISTIO_GATEWAY_NAME is optional. If it is not set, the crane agent creates a gateway resource for every mock deployment.
+
+        image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
+        imagePullPolicy: Always
+        
+        name: crane-container
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bzm-gateway
+  namespace : bm1
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http-80
+      protocol: HTTP
+    hosts:
+    - "*"
+  - port:
+      number: 443
+      name: https-443
+      protocol: HTTPS
+    tls:
+      mode: PASSTHROUGH
+    hosts:
+    - "*"
+  - port:
+      number: 15443
+      name: https-15443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: wildcard-credential
+    hosts:
+    - "*"
