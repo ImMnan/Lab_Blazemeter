@@ -104,8 +104,8 @@ spec:
           value: CLUSTERIP
         - name: KUBERNETES_USE_PRE_PULLING
           value: "true"
-        - name: KUBERNETES_ISTIO_GATEWAY_NAME
-          value: bzm-gateway
+    #    - name: KUBERNETES_ISTIO_GATEWAY_NAME
+    #     value: bzm-gateway
        ## Note: The environment variable KUBERNETES_ISTIO_GATEWAY_NAME is optional. If it is not set, the crane agent creates a gateway resource for every mock deployment.
 
         image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
@@ -115,36 +115,3 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
 
----
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: bzm-gateway
-  namespace : bm1
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-  - port:
-      number: 80
-      name: http-80
-      protocol: HTTP
-    hosts:
-    - "*"
-  - port:
-      number: 443
-      name: https-443
-      protocol: HTTPS
-    tls:
-      mode: PASSTHROUGH
-    hosts:
-    - "*"
-  - port:
-      number: 15443
-      name: https-15443
-      protocol: HTTPS
-    tls:
-      mode: SIMPLE
-      credentialName: wildcard-credential
-    hosts:
-    - "*"
