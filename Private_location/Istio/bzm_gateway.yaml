@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bzm-gateway
+  namespace : bm1
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - "*"
+      port:
+        name: http-80
+        number: 80
+        protocol: http
+    - hosts:
+        - "*"
+      port:
+        name: https-443
+        number: 443
+        protocol: https
+      tls:
+        mode: PASSTHROUGH
+    - hosts:
+        - "*"
+      port:
+        name: https-15443
+        number: 15443
+        protocol: https
+      tls:
+        mode: SIMPLE
+        credentialName: wildcard-credential

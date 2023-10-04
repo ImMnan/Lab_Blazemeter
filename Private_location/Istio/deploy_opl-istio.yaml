@@ -81,11 +81,11 @@ spec:
       containers:
       - env:
         - name: AUTH_TOKEN
-          value: e306dfdddccc619f42d44adec643987927945f11de0e25e814ba771825e39e32 # Update auth token
+          value: b4dc0fbd6e470ff8b27efa755c112feae77d5f46a30bc56e784d55ce995f9c9a # Update auth token
         - name: HARBOR_ID
           value: 650e7217a737f4164d0e20a6 # Update Harbour ID
         - name: SHIP_ID
-          value: 65115d273265911ef80393d6 # Update ship ID
+          value: 651166b6e14bba8e570da596 # Update ship ID
         - name: CONTAINER_MANAGER_TYPE
           value: KUBERNETES
         - name: IMAGE_OVERRIDES
@@ -104,8 +104,10 @@ spec:
           value: CLUSTERIP
         - name: KUBERNETES_USE_PRE_PULLING
           value: "true"
-    #    - name: KUBERNETES_ISTIO_GATEWAY_NAME
-    #     value: bzm-gateway
+        - name: KUBERNETES_SERVICES_BLOCKING_GET
+          value: "true"
+        - name: KUBERNETES_ISTIO_GATEWAY_NAME
+          value: bzm-gateway
        ## Note: The environment variable KUBERNETES_ISTIO_GATEWAY_NAME is optional. If it is not set, the crane agent creates a gateway resource for every mock deployment.
 
         image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
@@ -114,4 +116,3 @@ spec:
         name: crane-container
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
-
