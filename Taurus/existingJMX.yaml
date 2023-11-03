@@ -3,4 +3,15 @@ execution:
 
 scenarios:
   simple:
-    script: tests/jmx/dummy.jmx
+    script: test_basic.jmx
+
+modules:
+  blazemeter:
+    token: TDknBxu0hmVnJ7NqtG2F:DFadfgdsljasdfkKSKSDDFKSDFJKSDJFKSDJFsdjfksjfjDSF
+
+reporting:
+- module: blazemeter
+  report-name: demo1
+  test: Taurus Demo
+  project: 1473373
+  upload-artifacts: true
