@@ -1,0 +1,6 @@
+execution:
+- scenario: simple
+
+scenarios:
+  simple:
+    script: tests/jmx/dummy.jmx
