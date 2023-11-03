@@ -10,7 +10,7 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "pods/log"]
   verbs: ["get", "list"]
-- apiGroups: ["extensions", "apps", ""] # leave empty string for core
+- apiGroups: ["extensions", "apps", "networking.istio.io", ""] # leave empty string for core
   resources: ["pods", "services", "endpoints", "daemonsets", "pods/*", "pods/exec", "deployments", "replicasets", "ingresses", "deployments/scale", "virtualservices"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "createcollection"]
 
@@ -23,7 +23,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: bm1
+  namespace: bmi
 roleRef:
   kind: Role 
   name: role-crane1
@@ -53,7 +53,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: bm1
+  namespace: bmi
 
 ---
 # This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
@@ -62,8 +62,8 @@ kind: Deployment
 metadata:
   labels:
     role: role-crane1
-  name: crane-istio
-  namespace: bm1
+  name: crane-default
+  namespace: bmi
 spec:
   replicas: 1
   selector:
@@ -81,11 +81,11 @@ spec:
       containers:
       - env:
         - name: AUTH_TOKEN
-          value: b4dc0fbd6e470ff8b27efa755c112feae77d5f46a30bc56e784d55ce995f9c9a # Update auth token
+          value: af568f9ee8c2f4fdd943f9e94ec6c59fb57c35913348daf0e684087c90bc807a # Update auth token
         - name: HARBOR_ID
           value: 650e7217a737f4164d0e20a6 # Update Harbour ID
         - name: SHIP_ID
-          value: 651166b6e14bba8e570da596 # Update ship ID
+          value: 651d342b7265843ce80d7d67 # Update ship ID
         - name: CONTAINER_MANAGER_TYPE
           value: KUBERNETES
         - name: IMAGE_OVERRIDES
