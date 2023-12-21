@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: rolecrane
+  name: rolecrane1
 rules:
 - apiGroups: [""]
   resources: ["pods/exec"]
@@ -19,14 +19,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: rolecrane-binding-default
+  name: rolecrane1-binding-default
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: dmz
+  namespace: bm1
 roleRef:
   kind: Role 
-  name: rolecrane
+  name: rolecrane1
   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -34,7 +34,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: clustercranerole
+  name: clustercranerole2
 rules:
 - apiGroups: [""]
   resources: ["nodes"]
@@ -45,15 +45,15 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
- name: clustercranerole-binding-default
+ name: clustercranerole2-binding-default
 roleRef:
  apiGroup: rbac.authorization.k8s.io
  kind: ClusterRole
- name: clustercranerole
+ name: clustercranerole2
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: dmz
+  namespace: bm1
 
 ---
 # This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
@@ -61,31 +61,33 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    role: rolecrane
+    role: rolecrane1
+    app_cmdb_id: A0819633
   name: crane
-  namespace: dmz
+  namespace: bm1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      role: rolecrane
+      role: rolecrane1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        role: rolecrane
+        role: rolecrane1
+        app_cmdb_id: A0819633
     spec:
       serviceAccountName: default
       automountServiceAccountToken: true
       containers:
       - env:
         - name: AUTH_TOKEN
-          value: <auth_token> # Update auth token
+          value: ab8bc68b3396ee5669eb9d474834a0646b6e75c4e13a8a126c0d02b15c30694b # Update auth token
         - name: HARBOR_ID
-          value: <harbor_id> # Update Harbour ID
+          value: 63cd1cc281374f2d9743cc73 # Update Harbour ID
         - name: SHIP_ID
-          value: <ship_id> # Update ship ID
+          value: 656802147d074adaa60a6098 # Update ship ID
         - name: CONTAINER_MANAGER_TYPE
           value: KUBERNETES
         - name: IMAGE_OVERRIDES
@@ -94,8 +96,20 @@ spec:
           value: gcr.io/verdant-bulwark-278
         - name: AUTO_KUBERNETES_UPDATE
           value: 'true'
+       # - name: KUBERNETES_RESOURCES_DEFAULT_CPU
+       #   value: "500"
+       # - name: KUBERNETES_RESOURCES_DEFAULT_MEM
+       #   value: "4048"
         image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
+        #resources:
+        #  requests:
+        #    memory: "64Mi"
+        #    cpu: "250m"
+        #  limits:
+        #    memory: "1000Mi"
+        #    cpu: "500m"
         imagePullPolicy: Always
         name: crane-container
+        
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
