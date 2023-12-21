@@ -23,7 +23,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: bmi
+  namespace: bm1
 roleRef:
   kind: Role 
   name: role-crane1
@@ -53,7 +53,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: bmi
+  namespace: bm1
 
 ---
 # This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
@@ -62,8 +62,8 @@ kind: Deployment
 metadata:
   labels:
     role: role-crane1
-  name: crane-default
-  namespace: bmi
+  name: crane1
+  namespace: bm1
 spec:
   replicas: 1
   selector:
@@ -81,11 +81,11 @@ spec:
       containers:
       - env:
         - name: AUTH_TOKEN
-          value: af568f9ee8c2f4fdd943f9e94ec6c59fb57c35913348daf0e684087c90bc807a # Update auth token
+          value: ae09dd8dd73e517fc38731a5b65c2a7e9478bb38a59fcc1419c3f754bc05c5f6 # Update auth token
         - name: HARBOR_ID
           value: 650e7217a737f4164d0e20a6 # Update Harbour ID
         - name: SHIP_ID
-          value: 651d342b7265843ce80d7d67 # Update ship ID
+          value: 652e53e2ff5d4f4a7c06bdb8 # Update ship ID
         - name: CONTAINER_MANAGER_TYPE
           value: KUBERNETES
         - name: IMAGE_OVERRIDES
@@ -94,20 +94,9 @@ spec:
           value: gcr.io/verdant-bulwark-278
         - name: AUTO_KUBERNETES_UPDATE
           value: 'true'
-        - name: KUBERNETES_WEB_EXPOSE_TYPE
-          value: ISTIO
-        - name: KUBERNETES_WEB_EXPOSE_SUB_DOMAIN
-          value: bmgo.local
-        - name: KUBERNETES_WEB_EXPOSE_TLS_SECRET_NAME
-          value: wildcard-credential
         - name: KUBERNETES_SERVICE_USE_TYPE
           value: CLUSTERIP
-        - name: KUBERNETES_USE_PRE_PULLING
-          value: "true"
-        - name: KUBERNETES_SERVICES_BLOCKING_GET
-          value: "true"
-        - name: KUBERNETES_ISTIO_GATEWAY_NAME
-          value: bzm-gateway
+
        ## Note: The environment variable KUBERNETES_ISTIO_GATEWAY_NAME is optional. If it is not set, the crane agent creates a gateway resource for every mock deployment.
 
         image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master

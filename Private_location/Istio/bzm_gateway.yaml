@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: bzm-gateway
-  namespace : bmi
+  namespace : bm1
 spec:
   selector:
     istio: ingressgateway
