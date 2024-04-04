@@ -19,3 +19,6 @@ scenarios:
   basic_two:    
     script: /path/to/script.jmx   #For scripts  
 #bzt -locations -o modules.cloud.token=apiKey:apiSecret
+
+
+
