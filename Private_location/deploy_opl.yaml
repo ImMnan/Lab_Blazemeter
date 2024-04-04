@@ -23,7 +23,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: bm1
+  namespace: bm
 roleRef:
   kind: Role 
   name: role-crane1
@@ -53,7 +53,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: bm1
+  namespace: bm
 
 ---
 # This is the main deployment manifest for crane deployment (Make changes to the HarbourId, ShipId & Auth-token)
@@ -63,7 +63,7 @@ metadata:
   labels:
     role: role-crane1
   name: crane-istio
-  namespace: bm1
+  namespace: bm
 spec:
   replicas: 1
   selector:
@@ -81,11 +81,11 @@ spec:
       containers:
       - env:
         - name: AUTH_TOKEN
-          value: e306dfdddccc619f42d44adec643987927945f11de0e25e814ba771825e39e32 # Update auth token
+          value:  # Update auth token
         - name: HARBOR_ID
-          value: 650e7217a737f4164d0e20a6 # Update Harbour ID
+          value:  # Update Harbour ID
         - name: SHIP_ID
-          value: 65115d273265911ef80393d6 # Update ship ID
+          value:  # Update ship ID
         - name: CONTAINER_MANAGER_TYPE
           value: KUBERNETES
         - name: IMAGE_OVERRIDES
