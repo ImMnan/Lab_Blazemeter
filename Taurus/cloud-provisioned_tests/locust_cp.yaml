@@ -1,0 +1,24 @@
+execution:
+- executor: locust
+  concurrency:
+    local: 10
+   # cloud: 50 
+  ramp-up: 10s
+  hold-for: 3m
+  scenario: basicLocust
+
+scenarios:
+  basicLocust:
+    default-address: http://blazedemo.com
+    script: sample_lo.py
+
+modules:
+  blazemeter:
+    token: 01d06b779dafc84e1bf7d090:d94583bf94d4ab74098913bb5bf7c8c39b3411efdf4609d3686708a4531260d702a9538d
+
+reporting:
+- module: blazemeter
+  test: local_locust_test_with_taurus
+  project: Taurus
+
+  
