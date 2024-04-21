@@ -20,7 +20,8 @@ spec:
         number: 443
         protocol: https
       tls:
-        mode: PASSTHROUGH
+        mode: SIMPLE
+        credentialName: wildcard-credential
     - hosts:
         - "*"
       port:
@@ -28,5 +29,5 @@ spec:
         number: 15443
         protocol: https
       tls:
-        mode: SIMPLE
-        credentialName: wildcard-credential
+        mode: PASSTHROUGH
+        
