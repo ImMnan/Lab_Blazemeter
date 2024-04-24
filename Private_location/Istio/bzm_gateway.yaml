@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: bzm-gateway
-  namespace : bm1
+  namespace : default
 spec:
   selector:
     istio: ingressgateway
@@ -21,7 +21,7 @@ spec:
         protocol: https
       tls:
         mode: SIMPLE
-        credentialName: wildcard-credential
+        credentialName: "wildcard-credential"
     - hosts:
         - "*"
       port:
