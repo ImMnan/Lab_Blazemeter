@@ -128,12 +128,12 @@ spec:
       - env:
 
         - name: AUTH_TOKEN
-          value: 87ec6dcba2edc3d5d215c39d7ff3182d428c8ef6356e2e550d2accf5b09227f7
+          value: AUTH-token
 
         - name: HARBOR_ID
-          value: 650e7217a737f4164d0e20a6
+          value: harbour-Id
         - name: SHIP_ID
-          value: 6627257b4f8d9d38f103fa77
+          value: Ship-Id
         - name: CONTAINER_MANAGER_TYPE
           value: KUBERNETES
         - name: IMAGE_OVERRIDES
