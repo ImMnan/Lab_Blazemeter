@@ -1,0 +1,166 @@
+---
+# Source: blazemeter-crane/templates/rbac-cluster.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-roleCranetwo
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "update", "watch", "patch"]
+---
+# Source: blazemeter-crane/templates/rbac-cluster.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-roleCranetwo-binding-default
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-roleCranetwo
+subjects:
+- kind: ServiceAccount
+  name: default
+
+  namespace: default
+---
+# Source: blazemeter-crane/templates/rbac-ns.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: roleCranetwo
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions", "apps", ""] # leave empty string for core
+  resources: ["pods", "services", "endpoints", "daemonsets", "pods/*", "pods/exec", "deployments", "replicasets", "ingresses", "deployments/scale"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "createcollection"]
+
+# this is for istio ingress for mock services
+- apiGroups: ["networking.istio.io"]
+  resources: ["destinationrules", "virtualservices", "gateways"]
+  verbs: ["get", "list", "create", "delete", "patch", "update"]
+---
+# Source: blazemeter-crane/templates/rbac-ns.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: roleCranetwo-binding-default-default
+
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+
+  namespace: default
+roleRef:
+  kind: Role
+  name: roleCranetwo
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: bzm-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: http-80
+        protocol: HTTP
+      hosts:
+        - "*"
+    - port:
+        number: 443
+        name: https-443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        # This must be located in the "istio-system" namespace
+        # https://github.com/istio/istio/issues/14598#issuecomment-1226083889
+        credentialName: "my-credentials"
+      hosts:
+        - "*"
+    - port:
+        number: 15443
+        name: https-15443
+        protocol: HTTPS
+      tls:
+        mode: PASSTHROUGH
+      hosts:
+        - "*"
+---
+# Source: blazemeter-crane/templates/crane.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    role: roleCranetwo
+  name: cranedefault
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: roleCranetwo
+      crane: ready
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        role: roleCranetwo
+        crane: ready
+    spec:
+      serviceAccountName: default
+
+      automountServiceAccountToken: true
+      containers:
+      - env:
+
+        - name: AUTH_TOKEN
+          value: 87ec6dcba2edc3d5d215c39d7ff3182d428c8ef6356e2e550d2accf5b09227f7
+
+        - name: HARBOR_ID
+          value: 650e7217a737f4164d0e20a6
+        - name: SHIP_ID
+          value: 6627257b4f8d9d38f103fa77
+        - name: CONTAINER_MANAGER_TYPE
+          value: KUBERNETES
+        - name: IMAGE_OVERRIDES
+          value: '{}'
+        - name: DOCKER_REGISTRY
+          value: gcr.io/verdant-bulwark-278
+        - name: AUTO_KUBERNETES_UPDATE
+          value: 'true'
+        - name: KUBERNETES_WEB_EXPOSE_TYPE
+          value: ISTIO
+        - name: KUBERNETES_WEB_EXPOSE_SUB_DOMAIN
+          value: "lpl.local"
+        - name: KUBERNETES_WEB_EXPOSE_TLS_SECRET_NAME
+          value: "my-credentials"
+        - name: KUBERNETES_SERVICE_USE_TYPE
+          value: CLUSTERIP
+        - name: KUBERNETES_USE_PRE_PULLING
+          value: "true"
+        - name: KUBERNETES_SERVICES_BLOCKING_GET
+          value: "true"
+        - name: KUBERNETES_ISTIO_GATEWAY_NAME
+          value: "bzm-gateway"
+
+        image: gcr.io/verdant-bulwark-278/blazemeter/crane:latest-master
+        imagePullPolicy: Always
+        name: crane-container
+
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
