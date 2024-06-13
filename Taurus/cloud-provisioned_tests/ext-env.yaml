@@ -30,3 +30,8 @@ scenarios:
       method: GET
       url: https://demoblaze.com
 
+# ENV variables in the settings module - https://gettaurus.org/docs/ConfigSyntax/
+settings:
+  env: # set environment variables, see below for more explanation
+    VARNAME1: VARVALUE1
+    VARNAME2: VARVALUE2
