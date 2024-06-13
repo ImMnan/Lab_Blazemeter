@@ -4,6 +4,8 @@ execution:
   hold-for: 1m
   ramp-up: 5s
   scenario: basic
+  env:
+      key1: "value1"
 #  throughput: 3
 reporting:
 - module: final-stats
