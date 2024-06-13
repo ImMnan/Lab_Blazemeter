@@ -1,0 +1,30 @@
+execution:
+- concurrency: 5
+  executor: jmeter
+  hold-for: 1m
+  ramp-up: 5s
+  scenario: basic
+#  throughput: 3
+reporting:
+- module: final-stats
+- module: console
+- failed-labels: false
+  module: final-stats
+  percentiles: true
+  summary: true
+  summary-labels: true
+  test-duration: true  
+
+- module: blazemeter
+  workspace: 1226630
+  project: 1997770
+  report-name: simpler
+  test: checkEnv-extTest
+  upload-artifacts: true
+scenarios:
+  basic:
+    requests:
+    - label: HTTP Main Branch Request
+      method: GET
+      url: https://demoblaze.com
+
