@@ -1,25 +1,25 @@
 execution:
 - executor: jmeter
-  concurrency: 10
-  hold-for: 2m
+  concurrency: 2
+  hold-for: 1m
   ramp-up: 1m
-  steps: 2 # Ramp-up steps
+  steps: 0 # Ramp-up steps
   scenario: basic
 
 senarios:
   basic:    
-    script: /path/to/yourJmeterscript.jmx 
+    script: test_basic.jmx
 
 services:
 - module: shellexec
   prepare:  
   - mkdir /tmp/test && cd /tmp/test/
   startup:
-  - wget https://github.com/ImMnan/Lab_Blazemeter/blob/c5a16a904f148ad72b2634b5b4b462231ab97382/Taurus/data.csv > /tmp/test/log
-  shutdown:
-  - echo 'shutdown' >> /tmp/test/log 
-  post-process:
-  - rm /tmp/test/log
+  - curl -iv  uat-dfd.cambridgeinternational.org:443 > /tmp/test/curl.log
+ # shutdown:
+ # - echo 'shutdown' >> /tmp/test/log 
+  #post-process:
+  #- rm /tmp/test/log
 
 
 #services:

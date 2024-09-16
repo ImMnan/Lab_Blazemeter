@@ -1,0 +1,28 @@
+execution:
+- executor: jmeter
+  concurrency: 2
+  locations:    #bzt -locations
+    asia-east1-a: 1
+  hold-for: 1m
+  ramp-up: 1m
+  steps: 0 # Ramp-up steps
+  scenario: TwoCheckout
+
+modules:
+  blazemeter:
+    dedicated-ips: true
+    
+scenarios:
+  TwoCheckout:
+    script: test_basic.jmx
+
+services:
+- module: shellexec
+  prepare:  
+  - mkdir /tmp/test && cd /tmp/test/
+  startup:
+  - curl -iv  demourl.com:443 > /tmp/test/curl.log
+ # shutdown:
+ # - echo 'shutdown' >> /tmp/test/log 
+  #post-process:
+  #- rm /tmp/test/log
