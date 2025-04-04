@@ -1,0 +1,27 @@
+# Run the test with -cloud option with the bzt command.
+
+execution:
+- scenario: my-scenario
+#- locations:    #bzt -locations
+#    us-west-1: 1
+#    us-east-1: 2
+#  locations-weighted: false # represent the number of engines per location set above
+scenarios:
+  my-scenario:
+    requests:
+    - http://blazedemo.com/
+    
+modules:
+#  blazemeter:   # if only data/reports needs to be sent to blazemeter
+#    dedicated-ips: true
+  cloud:
+    account: My Account  # numeric identifier can also be specified
+    workspace: Shared Workspace #These are all Optional changes
+    project: Taurus tests
+    test: Example test
+
+#  To install additional python modules via pip, you can do it by using shellexec
+#services:
+#- module: shellexec
+#  prepare: 
+#  - pip install cryptography  # 'cryptography' is the library from PyPi

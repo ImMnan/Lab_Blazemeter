@@ -1,0 +1,23 @@
+#URL: https://a.blazemeter.com/app/#/accounts/1195941/workspaces/1226630/projects/1473373/tests/12775191/edit
+execution:
+- executor: jmeter
+  concurrency: 10
+  hold-for: 2m
+  ramp-up: 1m
+  steps: 2 # Ramp-up steps
+  scenario: Thread Group
+
+
+scenarios:
+ Thread Group:
+  requests:
+  - label: blazedemo
+    method: GET
+    url: http://blazedemo.com/
+    
+reporting:
+- module: passfail
+  criteria: # subject of [label] condition threshold [logic] [timeframe], action as status
+  - average response too high:  avg-rt>150ms, continue as failed
+
+  

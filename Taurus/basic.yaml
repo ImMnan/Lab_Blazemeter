@@ -1,0 +1,17 @@
+execution:
+- executor: jmeter
+  concurrency: 10
+  hold-for: 2m
+  ramp-up: 1m
+  steps: 2 # Ramp-up steps
+  scenario: basic   #second executor for more than one scenario, executor is not mandatory
+- executor: selenium
+  scenario: basic_two
+
+scenarios:
+  basic:
+    requests:
+    - https://www.demoblaze.com
+
+  basic_two:    
+    script: /path/to/script.jmx   #For scripts  

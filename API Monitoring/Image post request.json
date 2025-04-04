@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "exported_at": 1690898608,
+  "name": "Image post request",
+  "description": null,
+  "trigger_url": "https://api.runscope.com/radar/499a1aff-9418-4317-aa70-5a3e109c475a/trigger",
+  "steps": [
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "",
+      "method": "POST",
+      "form": {},
+      "args": {},
+      "data": "",
+      "headers": {
+        "Content-Type": [
+          "multipart/form-data"
+        ]
+      },
+      "body": "",
+      "multipart_form": [
+        {
+          "name": "img",
+          "value": "",
+          "is_hash": true,
+          "hash": "97d38d26-78e1-4764-894c-6b5b32dd614f",
+          "filename": "Level.png",
+          "content_type": "image/png"
+        }
+      ],
+      "auth": {},
+      "url": "https://yourapihere.com/",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        }
+      ],
+      "variables": [],
+      "scripts": [],
+      "before_scripts": []
+    }
+  ]
+}

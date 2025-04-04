@@ -1,0 +1,24 @@
+execution:
+- executor: jmeter
+  concurrency: 10
+  hold-for: 2m
+  ramp-up: 1m
+  steps: 2 # Ramp-up steps
+  scenario: basic
+  location: 
+    harbor-63cd1cc281374f2d9743cc73: 1
+
+- executor: jmeter    #second executor for more than one scenario, executor is not mandatory
+  scenario: basic_two
+
+scenarios:
+  basic:
+    requests:
+    - https://www.demoblaze.com
+
+  basic_two:    
+    script: /path/to/script.jmx   #For scripts  
+#bzt -locations -o modules.cloud.token=apiKey:apiSecret
+
+
+

@@ -1,0 +1,25 @@
+
+execution:
+- executor: jmeter
+  concurrency: 10
+  hold-for: 2m
+  ramp-up: 1m
+  scenario: my-req
+
+scenarios:
+  my-req:
+    requests:
+    - url: http://blazedemo.com/
+      assert-jsonpath:
+      - jsonpath: "$." # path to value, validation fails if path not exists
+        validate: true # validate against expected value
+        expected-value: "value" # the value we are expecting to validate, default: false
+        regexp: true  # if the value is regular expression, default: true
+        expect-null: false  # expected value is null
+
+# If you want to use xpath assertion:
+#      assert-xpath:
+#      - xpath: "/html/head/title/text()='My title'" # query that compares XPath query result with some value
+#        use-tolerant-parser: false  # use error-tolerant XML parser
+#        ignore-whitespace: true # ignore whitespaces in XML (has no effect when `use-tolerant-parser` is true)
+#        validate: false # validate XML against its schema (has no effect when `use-tolerant-parser` is true)

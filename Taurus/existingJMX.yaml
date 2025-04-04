@@ -1,0 +1,17 @@
+execution:
+- scenario: simple
+
+scenarios:
+  simple:
+    script: <Jmeter_Script>.jmx
+
+modules:
+  blazemeter:
+    token: API ID:API SECRET
+
+reporting:
+- module: blazemeter
+  report-name: demo1 # You may rename the report name
+  test: Taurus Demo  # You may rename the test name, but keep it similar for all runs in this investigation session
+  project: 1473373   # Project ID where you want the test to be saved
+  upload-artifacts: true

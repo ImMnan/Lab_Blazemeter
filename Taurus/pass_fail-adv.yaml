@@ -1,0 +1,34 @@
+modules:
+  blazemeter:
+    test: Cloud_report_taurus
+    report-name: Taurus_passfail
+  Cloud:
+    account: 1195941  # numeric identifier can also be specified
+    workspace: 1226630
+    project: 1473373
+
+execution:
+  concurrency: 10
+  hold-for: 30s
+  ramp-up: 1m
+  scenario: Thread Group
+
+scenarios:
+ Thread Group:
+  requests:
+  - label: blazedemo
+    method: GET
+    url: http://blazedemo.com/
+
+reporting:
+- module: final-stats
+- module: console
+- failed-labels: false
+  module: final-stats
+  percentiles: true
+  summary: true
+  summary-labels: true
+  test-duration: true
+- criteria:
+  - fail<10%
+  module: passfail

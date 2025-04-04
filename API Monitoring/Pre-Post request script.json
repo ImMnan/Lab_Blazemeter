@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "exported_at": 1690898000,
+  "name": "Dynamic Data and Request Chaining",
+  "description": "Dynamic Data and Request Chaining Guide url: https://guide.blazemeter.com/hc/en-us/articles/13326703780113 \nThe test also has assertions based on response time ms and json body property",
+  "trigger_url": "https://api.runscope.com/radar/64d0c7d0-921b-44a7-9b0c-28560cd4b548/trigger",
+  "steps": [
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "",
+      "method": "GET",
+      "args": {},
+      "data": "",
+      "headers": {},
+      "multipart_form": [],
+      "auth": {},
+      "url": "https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        },
+        {
+          "comparison": "equal_number",
+          "source": "response_json",
+          "value": "52",
+          "property": "remaining"
+        }
+      ],
+      "variables": [
+        {
+          "source": "response_json",
+          "name": "deck_id",
+          "property": "deck_id"
+        }
+      ],
+      "scripts": [],
+      "before_scripts": []
+    },
+    {
+      "step_type": "request",
+      "skipped": false,
+      "note": "",
+      "multipart_form": [],
+      "headers": {},
+      "auth": {},
+      "method": "GET",
+      "url": "https://www.deckofcardsapi.com/api/deck/{{deck_id}}/draw/?count=2",
+      "fragment": "",
+      "assertions": [
+        {
+          "comparison": "equal_number",
+          "source": "response_status",
+          "value": 200
+        },
+        {
+          "comparison": "is_less_than_or_equal",
+          "source": "response_time",
+          "value": "800"
+        },
+        {
+          "comparison": "equal_number",
+          "source": "response_json",
+          "value": "50",
+          "property": "remaining"
+        }
+      ],
+      "variables": [],
+      "scripts": [
+        "var data = JSON.parse(response.body);\n\nlog(\"Card 1:\" + data.cards[0].suit);\nlog(\"Card 2:\" + data.cards[1].suit);\n\nassert(data.cards[0].suit != data.cards[1].suit, \"Suits are not equal\");"
+      ],
+      "before_scripts": []
+    }
+  ]
+}

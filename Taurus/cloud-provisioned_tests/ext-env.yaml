@@ -1,0 +1,37 @@
+execution:
+- concurrency: 5
+  executor: jmeter
+  hold-for: 1m
+  ramp-up: 5s
+  scenario: basic
+  env:
+      key1: "value1"
+#  throughput: 3
+reporting:
+- module: final-stats
+- module: console
+- failed-labels: false
+  module: final-stats
+  percentiles: true
+  summary: true
+  summary-labels: true
+  test-duration: true  
+
+- module: blazemeter
+  workspace: 1226630
+  project: 1997770
+  report-name: simpler
+  test: checkEnv-extTest
+  upload-artifacts: true
+scenarios:
+  basic:
+    requests:
+    - label: HTTP Main Branch Request
+      method: GET
+      url: https://demoblaze.com
+
+# ENV variables in the settings module - https://gettaurus.org/docs/ConfigSyntax/
+settings:
+  env: # set environment variables, see below for more explanation
+    VARNAME1: VARVALUE1
+    VARNAME2: VARVALUE2
